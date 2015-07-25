@@ -14,7 +14,12 @@ describe("Persistent Node Chat Server", function() {
       password: "",
       database: "chat"
     });
-    dbConnection.connect();
+    dbConnection.connect(function(err){
+      if (err) {
+        console.log(err);
+      }
+      console.log('connected');
+    });
 
        var tablename = "messages"; // TODO: fill this out
 
@@ -55,7 +60,7 @@ describe("Persistent Node Chat Server", function() {
           expect(results.length).to.equal(1);
 
           // TODO: If you don't have a column named text, change this test.
-          expect(results[0].text).to.equal("In mercy's name, three days is all I need.");
+          expect(results[0].messages).to.equal("In mercy's name, three days is all I need.");
 
           done();
         });

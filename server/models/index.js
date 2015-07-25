@@ -5,35 +5,79 @@ var db = require('../db');
 
 module.exports = {
   messages: {
-    get: function () {}, // a function which produces all the messages
-    post: function () {} // a function which can be used to insert a message into the database
+    get: function (res) {
+      db.connection.query( 'SELECT * from messages', function(err, rows){
+        if (err){
+          console.log(err);
+        } else {
+          var response = {};
+          response.results = rows;
+          res.end(JSON.stringify(response));
+        }
+      });
+    }, // a function which produces all the messages
+    post: function (message, userName, roomName, res) {
+      var timeStamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+      db.connection.query('SELECT * from users where userName =?', [userName], function(err, rows){
+        console.log(rows);
+        if (rows.length === 0){
+          db.connection.query('INSERT INTO users SET ?', {userName: userName}, function(err){
+            if (err){
+              console.log(err);
+            } else {
+              console.log("Added User");
+              // we now write the message in db
+              db.connection.query(
+                'INSERT INTO messages SET ?',
+                {message: message, userName: userName, roomName: roomName, createdAt: timeStamp},
+                function(err){
+                  if (err){
+                    console.log(err);
+                  } else {
+                   res.end('Success!');
+                  }
+              });
+            }
+          });
+        }
+        db.connection.query(
+          'INSERT INTO messages SET ?',
+          {message: message, userName: userName, roomName: roomName, createdAt: timeStamp},
+          function(err){
+            if (err){
+              console.log(err);
+            } else {
+              res.end('Success!');
+            }
+        });
+      });
+    }
   },
 
   users: {
     // Ditto as above.
-    get: function () {},
-    post: function (username) {
-      console.log(username);
+    get: function (res) {
+      db.connection.query( 'SELECT * from users', function(err, rows){
+        if (err){
+          console.log(err);
+        } else {
+          var response = {};
+          response.results = rows;
+          res.end(JSON.stringify(response));
+        }
+      });
+    },
+    post: function (userName, res) {
 
-      // console.log(db.connection);
-      db.connection.connect(function(err){
-        if (err) {console.log(err)};
-        console.log('connected');
+      db.connection.query('INSERT INTO users SET ?', {userName: userName} ,function(err){
+        if (err){
+          console.log(err);
+        } else {
+          res.end('Success!');
+        }
       });
 
-      db.connection.query('SELECT * FROM users WHERE userName = "Zach"', function(err, rows){
-        console.log(rows);
-      })
-      // db.connnection.query('SELECT * FROM users', function(err, rows, fields) {
-      //   console.log('rows :', rows);
-      //   console.log('fields :', fields );
-      // });
-
-      db.connection.end(function(err){
-        if (err) {console.log(err)};
-        console.log('disconnected');
-      });
     }
   }
 };
-

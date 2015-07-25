@@ -1,3 +1,5 @@
+#Add Logic to create and drop database
+DROP DATABASE chat;
 
 CREATE DATABASE chat;
 
@@ -8,8 +10,8 @@ CREATE TABLE messages (
   `messageID` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `message` VARCHAR(500),
   `createdAt` DATETIME,
-  `userID` INT NOT NULL,
-  `roomname` VARCHAR(200)
+  `userName` VARCHAR(80),
+  `roomName` VARCHAR(200)
 );
 
 CREATE TABLE users (
@@ -19,7 +21,6 @@ CREATE TABLE users (
 
 
 /* Create other tables and define schemas for them here! */
-
 
 
 
